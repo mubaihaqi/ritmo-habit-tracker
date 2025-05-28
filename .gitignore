@@ -26,3 +26,5 @@ pnpm-debug.log*
 # vscode settings folder
 .vscode/
 /src/generated/prisma
+
+/src/generated/prisma

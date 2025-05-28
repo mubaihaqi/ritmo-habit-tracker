@@ -1,0 +1,336 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+// Kalau kalian lia ini banyak komennya maklum aja ya, soalnya ini aku bikin buat belajar sendiri, jadi aku kasih komentar biar aku ngerti apa yang aku tulis
+
+generator client {
+      provider = "prisma-client-js" // Generator untuk Prisma Client, ini yang akan dipakai di aplikasi
+    }
+
+datasource db {
+      provider = "postgresql" // Provider database yang digunakan, di sini kita pakai PostgreSQL
+      url      = env("DATABASE_URL") // URL koneksi ke database, diambil dari environment variable DATABASE_URL
+    }
+
+/// === User ===
+model User {                                          // Model untuk User, yang merepresentasikan user dalam aplikasi, setiap model di Prisma adalah representasi dari tabel di database
+  id         Int        @id @default(autoincrement()) // Unique identifier untuk user(auto incerement)
+  name       String                                   // Nama lengkap user
+  username   String     @unique                       // Username unik user  
+  email      String     @unique                       // Email unik user
+  dailyLogs  DailyLog[]                               // Relasi ke DailyLog, satu user bisa punya banyak DailyLog
+  createdAt  DateTime   @default(now())               // Tanggal pembuatan user
+  updatedAt  DateTime   @updatedAt                    // Tanggal update terakhir user
+}
+
+/// === Daily Log ===
+model DailyLog {
+  id          Int         @id @default(autoincrement())                   // Unique identifier untuk DailyLog(auto increment)
+  user        User        @relation(fields: [userId], references: [id])   // Relasi ke User, satu DailyLog dimiliki oleh satu User -> buat kolom userId, yang merefer ke id User -> tapi ini cuman deklarasi relasi, bukan buat kolom userId
+  userId      Int                                                         // Nah di sini kita buat kolom userId yang merefer ke id User
+  date        DateTime                                                    // Tanggal log, harus unik untuk setiap user
+  mood        Mood?       @relation(fields: [moodId], references: [id])   // Relasi ke Mood, satu DailyLog bisa punya satu Mood -> buat kolom moodId, yang merefer ke id Mood -> tapi ini cuman deklarasi relasi, bukan buat kolom moodId
+  moodId      Int?                                                        // Nah di sini kita buat kolom moodId yang merefer ke id Mood, ini nullable
+
+  note        String?                                                     // Catatan harian, nullable
+  photoUrl    String?                                                     // URL foto harian, nullable
+  voiceUrl    String?                                                     // URL rekaman suara harian, nullable
+
+  emotions    EmosiLog[]                                                  // Relasi ke EmosiLog, satu DailyLog bisa punya banyak EmosiLog
+  tidurs      TidurLog[]                                                  // Relasi ke TidurLog, satu DailyLog bisa punya banyak TidurLog
+  kesehatans  KesehatanLog[]                                              // Relasi ke KesehatanLog, satu DailyLog bisa punya banyak KesehatanLog
+  hobis       HobiLog[]                                                   // Relasi ke HobiLog, satu DailyLog bisa punya banyak HobiLog
+  makanans    MakananLog[]                                                // Relasi ke MakananLog, satu DailyLog bisa punya banyak MakananLog
+  sosials     SosialLog[]                                                 // Relasi ke SosialLog, satu DailyLog bisa punya banyak SosialLog
+  betters     AkuYangLebihBaikLog[]                                       // Relasi ke AkuYangLebihBaikLog, satu DailyLog bisa punya banyak AkuYangLebihBaikLog
+  prLogs      PekerjaanRumahLog[]                                         // Relasi ke PekerjaanRumahLog, satu DailyLog bisa punya banyak PekerjaanRumahLog
+  cuacas      CuacaLog[]                                                  // Relasi ke CuacaLog, satu DailyLog bisa punya banyak CuacaLog
+  sekolahs    SekolahLog[]                                                // Relasi ke SekolahLog, satu DailyLog bisa punya banyak SekolahLog
+  kecantikan  KecantikanLog[]                                             // Relasi ke KecantikanLog, satu DailyLog bisa punya banyak KecantikanLog
+  produktifs  ProduktivitasLog[]                                          // Relasi ke ProduktivitasLog, satu DailyLog bisa punya banyak ProduktivitasLog
+  romances    RomanceLog[]                                                // Relasi ke RomanceLog, satu DailyLog bisa punya banyak RomanceLog
+  tempats     TempatLog[]                                                 // Relasi ke TempatLog, satu DailyLog bisa punya banyak TempatLog
+  bulan       Bulan?    @relation(fields: [bulanId], references: [id])    // Relasi ke Bulan, satu DailyLog punya satu Bulan -> buat kolom bulanId, yang merefer ke id Bulan -> tapi ini cuman deklarasi relasi, bukan buat kolom bulanId
+  bulanId     Int?                                                        // Nah di sini kita buat kolom bulanId yang merefer ke id Bulan, ini nullable
+  kebiasaanBuruk KebiasaanBurukLog[]                                      // Relasi ke KebiasaanBurukLog, satu DailyLog bisa punya banyak KebiasaanBurukLog
+  gejalaHaids GejalaHaidLog[]                                             // Relasi ke GejalaHaidLog, satu DailyLog bisa punya banyak GejalaHaidLog
+  pekerjaans  PekerjaanLog[]                                              // Relasi ke PekerjaanLog, satu DailyLog bisa punya banyak PekerjaanLog
+
+  createdAt   DateTime    @default(now())                                 // Tanggal pembuatan DailyLog
+  updatedAt   DateTime    @updatedAt                                      // Tanggal update terakhir DailyLog
+}
+
+/// === Mood (1 per hari) ===
+model Mood {
+  id     Int        @id @default(autoincrement()) // Unique identifier untuk Mood(auto increment)
+  label  String                                   // Label mood, misalnya "Bahagia", "Sedih", dll
+  color  String                                   // Warna yang merepresentasikan mood, misalnya primay, secondary, dll 
+  logs   DailyLog[]                               // Relasi ke DailyLog, satu Mood bisa dimiliki oleh banyak DailyLog
+}
+
+/// === Emosi (many per hari) ===
+model Emosi {
+  id     Int        @id @default(autoincrement()) // Unique identifier untuk Emosi(auto increment)
+  label  String                                   // Label emosi, misalnya "Marah", "Senang", dll
+  logs   EmosiLog[]                               // Relasi ke EmosiLog, satu Emosi bisa dimiliki oleh banyak EmosiLog
+}
+
+model EmosiLog {
+  id         Int      @id @default(autoincrement())                     // Unique identifier untuk EmosiLog(auto increment)
+  dailyLog   DailyLog @relation(fields: [dailyLogId], references: [id]) // Relasi ke DailyLog, satu EmosiLog dimiliki oleh satu DailyLog -> buat kolom dailyLogId, yang merefer ke id DailyLog -> tapi ini cuman deklarasi relasi, bukan buat kolom dailyLogId
+  dailyLogId Int                                                        // Nah di sini kita buat kolom dailyLogId yang merefer ke id DailyLog
+  emosi      Emosi    @relation(fields: [emosiId], references: [id])    // Relasi ke Emosi, satu EmosiLog dimiliki oleh satu Emosi -> buat kolom emosiId, yang merefer ke id Emosi -> tapi ini cuman deklarasi relasi, bukan buat kolom emosiId
+  emosiId    Int                                                        // Nah di sini kita buat kolom emosiId yang
+}
+
+// unuk model-model  seterusnya tuh sama lah kayak emosi giu kegunaanya, jad g tak kasih komen lagi
+
+/// === Tidur (many per hari) ===
+model Tidur {
+  id     Int      @id @default(autoincrement())
+  label  String
+  logs   TidurLog[]
+}
+
+model TidurLog {
+  id         Int      @id @default(autoincrement())
+  dailyLog   DailyLog @relation(fields: [dailyLogId], references: [id])
+  dailyLogId Int
+  tidur      Tidur    @relation(fields: [tidurId], references: [id])
+  tidurId    Int
+}
+
+/// === Kesehatan (many per hari) ===
+model Kesehatan {
+  id     Int    @id @default(autoincrement())
+  label  String
+  logs   KesehatanLog[]
+}
+
+model KesehatanLog {
+  id           Int        @id @default(autoincrement())
+  dailyLog     DailyLog   @relation(fields: [dailyLogId], references: [id])
+  dailyLogId   Int
+  kesehatan    Kesehatan  @relation(fields: [kesehatanId], references: [id])
+  kesehatanId  Int
+}
+
+/// === Hobi (many per hari) ===
+model Hobi {
+  id    Int    @id @default(autoincrement())
+  label String
+  logs  HobiLog[]
+}
+
+model HobiLog {
+  id        Int      @id @default(autoincrement())
+  dailyLog  DailyLog @relation(fields: [dailyLogId], references: [id])
+  dailyLogId Int
+  hobi      Hobi     @relation(fields: [hobiId], references: [id])
+  hobiId    Int
+}
+
+/// === Makanan (many per hari) ===
+model Makanan {
+  id    Int    @id @default(autoincrement())
+  label String
+  logs  MakananLog[]
+}
+
+model MakananLog {
+  id         Int      @id @default(autoincrement())
+  dailyLog   DailyLog @relation(fields: [dailyLogId], references: [id])
+  dailyLogId Int
+  makanan    Makanan  @relation(fields: [makananId], references: [id])
+  makananId  Int
+}
+
+/// === Sosial (many per hari) ===
+model Sosial {
+  id    Int    @id @default(autoincrement())
+  label String
+  logs  SosialLog[]
+}
+
+model SosialLog {
+  id         Int      @id @default(autoincrement())
+  dailyLog   DailyLog @relation(fields: [dailyLogId], references: [id])
+  dailyLogId Int
+  sosial     Sosial   @relation(fields: [sosialId], references: [id])
+  sosialId   Int
+}
+
+/// === AkuYangLebihBaik (many per hari) ===
+model AkuYangLebihBaik {
+  id    Int    @id @default(autoincrement())
+  label String
+  logs  AkuYangLebihBaikLog[]
+}
+
+model AkuYangLebihBaikLog {
+  id         Int      @id @default(autoincrement())
+  dailyLog   DailyLog @relation(fields: [dailyLogId], references: [id])
+  dailyLogId Int
+  akuYangLebihBaik AkuYangLebihBaik @relation(fields: [akuYangLebihBaikId], references: [id])
+  akuYangLebihBaikId Int
+}
+
+/// === Pekerjaan Rumah (many per hari) ===
+model PekerjaanRumah {
+  id    Int    @id @default(autoincrement())
+  label String
+  logs  PekerjaanRumahLog[]
+}
+
+model PekerjaanRumahLog {
+  id         Int      @id @default(autoincrement())
+  dailyLog   DailyLog @relation(fields: [dailyLogId], references: [id])
+  dailyLogId Int
+  pekerjaanRumah PekerjaanRumah @relation(fields: [pekerjaanRumahId], references: [id])
+  pekerjaanRumahId Int
+}
+
+/// === Cuaca (many per hari) ===
+model Cuaca {
+  id    Int    @id @default(autoincrement())
+  label String
+  logs  CuacaLog[]
+}
+
+model CuacaLog {
+  id         Int      @id @default(autoincrement())
+  dailyLog   DailyLog @relation(fields: [dailyLogId], references: [id])
+  dailyLogId Int
+  cuaca      Cuaca    @relation(fields: [cuacaId], references: [id])
+  cuacaId    Int
+}
+
+/// === Sekolah (many per hari) ===
+model Sekolah {
+  id    Int    @id @default(autoincrement())
+  label String
+  logs  SekolahLog[]
+}
+
+model SekolahLog {
+  id         Int      @id @default(autoincrement())
+  dailyLog   DailyLog @relation(fields: [dailyLogId], references: [id])
+  dailyLogId Int
+  sekolah    Sekolah  @relation(fields: [sekolahId], references: [id])
+  sekolahId  Int
+}
+
+/// === Kecantikan (many per hari) ===
+model Kecantikan {
+  id    Int    @id @default(autoincrement())
+  label String
+  logs  KecantikanLog[]
+}
+
+model KecantikanLog {
+  id         Int      @id @default(autoincrement())
+  dailyLog   DailyLog @relation(fields: [dailyLogId], references: [id])
+  dailyLogId Int
+  kecantikan Kecantikan @relation(fields: [kecantikanId], references: [id])
+  kecantikanId Int
+}
+
+/// === Produkivias (many per hari) ===
+model Produktivitas {
+  id    Int    @id @default(autoincrement())
+  label String
+  logs  ProduktivitasLog[]
+}
+
+model ProduktivitasLog {
+  id         Int      @id @default(autoincrement())
+  dailyLog   DailyLog @relation(fields: [dailyLogId], references: [id])
+  dailyLogId Int
+  produktivitas Produktivitas @relation(fields: [produktivitasId], references: [id])
+  produktivitasId Int
+}
+
+/// === Romance (many per hari) ===
+model Romance {
+  id    Int    @id @default(autoincrement())
+  label String
+  logs  RomanceLog[]
+}
+
+model RomanceLog {
+  id         Int      @id @default(autoincrement())
+  dailyLog   DailyLog @relation(fields: [dailyLogId], references: [id])
+  dailyLogId Int
+  romance    Romance  @relation(fields: [romanceId], references: [id])
+  romanceId  Int
+}
+
+/// === Tempat (many per hari) ===
+model Tempat {
+  id    Int    @id @default(autoincrement())
+  label String
+  logs  TempatLog[]
+}
+
+model TempatLog {
+  id         Int      @id @default(autoincrement())
+  dailyLog   DailyLog @relation(fields: [dailyLogId], references: [id])
+  dailyLogId Int
+  tempat     Tempat   @relation(fields: [tempatId], references: [id])
+  tempatId   Int
+}
+
+/// === Kebiasaan Buruk (many per hari) ===
+model KebiasaanBuruk {
+  id    Int    @id @default(autoincrement())
+  label String
+  logs  KebiasaanBurukLog[]
+}
+
+model KebiasaanBurukLog {
+  id         Int      @id @default(autoincrement())
+  dailyLog   DailyLog @relation(fields: [dailyLogId], references: [id])
+  dailyLogId Int
+  kebiasaanBuruk KebiasaanBuruk @relation(fields: [kebiasaanBurukId], references: [id])
+  kebiasaanBurukId Int
+}
+
+/// === Gejala Haid (many per hari) ===
+model GejalaHaid {
+  id    Int    @id @default(autoincrement())
+  label String
+  logs  GejalaHaidLog[]
+}
+
+model GejalaHaidLog {
+  id         Int      @id @default(autoincrement())
+  dailyLog   DailyLog @relation(fields: [dailyLogId], references: [id])
+  dailyLogId Int
+  gejalaHaid GejalaHaid @relation(fields: [gejalaHaidId], references: [id])
+  gejalaHaidId Int
+}
+
+/// === Pekerjaan (many per hari) ===
+model Pekerjaan {
+  id    Int    @id @default(autoincrement())
+  label String
+  logs  PekerjaanLog[]
+}
+
+model PekerjaanLog {
+  id         Int      @id @default(autoincrement())
+  dailyLog   DailyLog @relation(fields: [dailyLogId], references: [id])
+  dailyLogId Int
+  pekerjaan  Pekerjaan @relation(fields: [pekerjaanId], references: [id])
+  pekerjaanId Int
+}
+
+/// === Bulan (1 per hari) ===
+model Bulan {
+  id         Int       @id @default(autoincrement())
+  nama       String
+  dailyLogs  DailyLog[]
+}
