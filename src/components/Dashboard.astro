@@ -1,10 +1,14 @@
 ---
 import "../styles/global.css";
 import Navbar from "./Navbar.astro";
-import Debug from "./Debug.astro";
-import EF from "../components/EntryForm.astro";
+import TopSection from "./sections/TopSection.astro";
+import MiddleSection from "./sections/MiddleSection.astro";
+import BottomSection from "./sections/BottomSection.astro";
 ---
 
 <Navbar />
-<!-- <Debug /> -->
-<EF />
+<div class="dashboard-container mx-auto w-[99%] px-4 my-6">
+  <TopSection />
+  <MiddleSection />
+  <BottomSection />
+</div>
