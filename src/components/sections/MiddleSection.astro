@@ -1,0 +1,13 @@
+---
+import WrprMoodGrafik from "../reactcomponents/WrprMoodGrafik.jsx";
+import WrprMoodCounter from "../reactcomponents/WrprMoodCounter.jsx";
+import WrprMoodCalendar from "../reactcomponents/WrprMoodCalendar.jsx";
+---
+
+<div
+  class="middle-section flex flex-row items-center justify-between gap-2 text-center mb-4 bg-info/5 p-3 rounded-lg"
+>
+  <WrprMoodGrafik client:load />
+  <WrprMoodCounter client:load />
+  <WrprMoodCalendar client:load />
+</div>

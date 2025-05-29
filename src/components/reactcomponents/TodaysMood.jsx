@@ -43,7 +43,7 @@ export default function TodaysMood() {
   };
 
   return (
-    <div className="bg-info/5 rounded-md p-3 flex flex-col gap-2">
+    <div className="bg-base-100 rounded-md p-3 flex flex-col gap-2">
       {/* Header */}
       <div className="flex flex-col items-start justify-between">
         <h4 className="font-semibold tracking-tight text-start ps-2 text-base">
@@ -210,14 +210,14 @@ export default function TodaysMood() {
                 {!recording ? (
                   <button
                     onClick={startRecording}
-                    className="btn btn-soft btn-info text-info rounded-md"
+                    className="btn btn-soft btn-info rounded-md"
                   >
                     Ketuk untuk rekam
                   </button>
                 ) : (
                   <button
                     onClick={stopRecording}
-                    className="btn btn-soft btn-error text-info rounded-md"
+                    className="btn btn-soft btn-error rounded-md"
                   >
                     Stop Rekaman
                   </button>
@@ -235,12 +235,12 @@ export default function TodaysMood() {
         </div>
 
         {/* Text Area */}
-        <div className="flex flex-col">
+        <div className="flex flex-col ">
           <h4 className="text-start ps-2 pb-1">Memo Singkat</h4>
           <textarea
             name=""
             id=""
-            className="bg-base-100 rounded-md w-full h-full resize-none focus:outline-none px-2 py-3"
+            className="bg-base-100 border border-info/20 rounded-md w-full h-full resize-none focus:outline-none px-2 py-3"
           ></textarea>
         </div>
       </div>

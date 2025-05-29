@@ -1,12 +1,6 @@
-import React, { useState } from "react";
-import { Modal, Box, Button, Typography } from "@mui/material";
-import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-import { LocalizationProvider } from "@mui/x-date-pickers";
-import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
-
 export default function ViewInputModal() {
   return (
-    <div className="bg-info/5 rounded-md p-3 flex flex-col gap-2">
+    <div className="bg-base-100 rounded-md p-3 flex flex-col gap-2">
       {/* Header */}
       <div className="flex flex-col items-start justify-between">
         <h4 className="font-semibold tracking-tight text-start ps-2 text-base">
