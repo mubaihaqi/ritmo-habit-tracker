@@ -49,9 +49,9 @@ const MoodShape = (props) => {
       <rect
         x={cx - 4}
         y={cy - 12}
-        rx={8}
-        ry={2}
-        width={10}
+        rx={6}
+        ry={6}
+        width={15}
         height={30}
         fill={color}
       />
@@ -98,7 +98,13 @@ export default function MoodScatterChart() {
           formatter={(value) => moodLabels[value - 1]}
           labelFormatter={(label) => `Tanggal ${label}`}
         /> */}
-          <Scatter name="Mood" data={data} shape={<MoodShape />} />
+          <Scatter
+            name="Mood"
+            data={data}
+            shape={<MoodShape />}
+            fill="#23d5e8"
+            line
+          />
         </ScatterChart>
       </ResponsiveContainer>{" "}
     </div>

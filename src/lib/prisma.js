@@ -1,6 +1,7 @@
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient } from "@prisma/client/edge";
+import { withAccelerate } from "@prisma/extension-accelerate";
 
-let prisma;
+const prisma = new PrismaClient().$extends(withAccelerate());
 
 if (process.env.NODE_ENV === "production") {
   prisma = new PrismaClient(); //kalau di production, buat instance baru

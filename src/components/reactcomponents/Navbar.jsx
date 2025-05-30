@@ -32,11 +32,8 @@ export default function Navbar() {
           role="button"
           className="btn btn-ghost btn-circle avatar"
         >
-          <div className="w-10 rounded-full">
-            <img
-              alt="Tailwind CSS Navbar component"
-              src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"
-            />
+          <div className="w-10 rounded-full border-2 border-info">
+            <img alt="Guweh mubaihaqi" src="public\abangjawa.jpg" />
           </div>
         </div>
       </div>

@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { ResponsiveContainer } from "recharts";
 
 // Ambil data dari MoodGrafik.jsx
@@ -11,7 +12,6 @@ const grafikData = [
   { date: "31", mood: 2 },
 ];
 
-// DaisyUI color mapping (harus sama dengan MoodGrafik.jsx dan MoodCounter.jsx)
 const moodMap = {
   1: "secondary", // Sedih
   2: "error", // Biasa
@@ -28,6 +28,7 @@ const fallbackColors = {
 };
 
 function getDaisyUIColor(className) {
+  if (typeof document === "undefined") return fallbackColors[className];
   const el = document.createElement("div");
   el.className = `bg-${className} hidden`;
   document.body.appendChild(el);
@@ -66,6 +67,15 @@ function CalendarGrid() {
       {days.map((d, i) => (
         <div
           key={i}
+          className={`
+            flex items-center justify-center rounded-full
+            font-semibold transition-colors duration-200
+            ${
+              moodCalendar[d.key]
+                ? "text-white border-2 border-white"
+                : "text-gray-400 border border-gray-700"
+            }
+          `}
           style={{
             backgroundColor: moodCalendar[d.key] || "#333",
             borderRadius: "50%",
@@ -88,6 +98,18 @@ function CalendarGrid() {
 }
 
 export default function MoodCalendar() {
+  const [moodCalendar, setMoodCalendar] = useState({});
+
+  useEffect(() => {
+    // Generate moodCalendar di client
+    const calendar = grafikData.reduce((acc, cur) => {
+      const dateStr = `2025-05-${cur.date.padStart(2, "0")}`;
+      acc[dateStr] = getDaisyUIColor(moodMap[cur.mood]);
+      return acc;
+    }, {});
+    setMoodCalendar(calendar);
+  }, []);
+
   return (
     <div className="w-full h-full bg-base-100 rounded-md p-3 flex-1/4 flex flex-col gap-2">
       {/* Header */}
