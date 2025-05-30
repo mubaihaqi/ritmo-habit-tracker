@@ -17,14 +17,32 @@ const data = [
   { date: "31", mood: 2 },
 ];
 
-const moodLabels = ["😠", "😞", "😐", "🙂", "😃"];
-const moodColors = ["#e74c3c", "#e67e22", "#3498db", "#2ecc71", "#1abc9c"];
+const moodLabels = ["Sedih", "Biasa", "Santai", "Senang", "Bahagia"];
+const moodMap = {
+  1: "secondary", // Sedih
+  2: "error", // Biasa
+  3: "warning", // Santai
+  4: "primary", // Senang
+  5: "success", // Bahagia
+};
 
-// Custom marker shape (lonjong ke bawah)
+function getDaisyUIColor(className) {
+  const el = document.createElement("div");
+  el.className = `bg-${className} text-white p-2 hidden`;
+  el.textContent = ".";
+  document.body.appendChild(el);
+
+  const color = getComputedStyle(el).backgroundColor;
+  document.body.removeChild(el);
+
+  return color === "rgba(0, 0, 0, 0)" ? "#facc15" : color;
+}
+
 const MoodShape = (props) => {
   const { cx, cy, payload } = props;
   const mood = payload.mood;
-  const color = moodColors[mood - 1];
+  const className = moodMap[mood];
+  const color = getDaisyUIColor(className);
 
   return (
     <g>
@@ -32,7 +50,7 @@ const MoodShape = (props) => {
         x={cx - 4}
         y={cy - 12}
         rx={8}
-        ry={3}
+        ry={2}
         width={10}
         height={30}
         fill={color}
@@ -48,7 +66,7 @@ const MoodShape = (props) => {
 
 export default function MoodScatterChart() {
   return (
-    <div className="w-full bg-base-100 rounded-md p-3 flex flex-col gap-2">
+    <div className="w-full bg-base-100 rounded-md p-3 flex-2/4 flex flex-col gap-2">
       {/* Header */}
       <div className="flex flex-col items-start justify-between">
         <h4 className="font-semibold tracking-tight text-start ps-2 text-base">
@@ -56,19 +74,20 @@ export default function MoodScatterChart() {
         </h4>
         <div className="bg-info h-[2px] w-[99%] mx-auto rounded-full animate-pulse my-2"></div>
       </div>
-      <ResponsiveContainer width="100%" height={350}>
+      <ResponsiveContainer width="100%" height={230}>
         <ScatterChart>
           <XAxis
             type="category"
             dataKey="date"
-            tickLine={false}
+            tickLine={true}
             axisLine={{ stroke: "#ccc" }}
           />
           <YAxis
             type="number"
             dataKey="mood"
-            domain={[0.6, 0.5]}
-            tickCount={5}
+            domain={[0.45, 5.5]}
+            tickLine={true}
+            ticks={[1, 2, 3, 4, 5]}
             tickFormatter={(val) => {
               const index = Math.round(val) - 1;
               return moodLabels[index] ?? "";

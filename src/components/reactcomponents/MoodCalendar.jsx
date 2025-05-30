@@ -1,14 +1,47 @@
-const moodCalendar = {
-  "2025-05-25": "😞",
-  "2025-05-26": "😐",
-  "2025-05-27": "😎",
-  "2025-05-28": "😐",
-  "2025-05-29": "😠",
+import { ResponsiveContainer } from "recharts";
+
+// Ambil data dari MoodGrafik.jsx
+const grafikData = [
+  { date: "25", mood: 2 },
+  { date: "26", mood: 3 },
+  { date: "27", mood: 5 },
+  { date: "28", mood: 3 },
+  { date: "29", mood: 1 },
+  { date: "30", mood: 4 },
+  { date: "31", mood: 2 },
+];
+
+// DaisyUI color mapping (harus sama dengan MoodGrafik.jsx dan MoodCounter.jsx)
+const moodMap = {
+  1: "secondary", // Sedih
+  2: "error", // Biasa
+  3: "warning", // Santai
+  4: "primary", // Senang
+  5: "success", // Bahagia
+};
+const fallbackColors = {
+  success: "#22c55e",
+  primary: "#3b82f6",
+  warning: "#facc15",
+  error: "#ef4444",
+  secondary: "#a855f7",
 };
 
-function getDayEmoji(dateStr) {
-  return moodCalendar[dateStr] || "+";
+function getDaisyUIColor(className) {
+  const el = document.createElement("div");
+  el.className = `bg-${className} hidden`;
+  document.body.appendChild(el);
+  const color = getComputedStyle(el).backgroundColor;
+  document.body.removeChild(el);
+  return color === "rgba(0, 0, 0, 0)" ? fallbackColors[className] : color;
 }
+
+// Generate moodCalendar dari grafikData
+const moodCalendar = grafikData.reduce((acc, cur) => {
+  const dateStr = `2025-05-${cur.date.padStart(2, "0")}`;
+  acc[dateStr] = getDaisyUIColor(moodMap[cur.mood]);
+  return acc;
+}, {});
 
 function CalendarGrid() {
   const days = Array.from({ length: 35 }, (_, i) => {
@@ -27,24 +60,27 @@ function CalendarGrid() {
         gridTemplateColumns: "repeat(7, 1fr)",
         gap: "4px",
         padding: "8px",
+        height: "231px",
       }}
     >
       {days.map((d, i) => (
         <div
           key={i}
           style={{
-            backgroundColor: "#333",
+            backgroundColor: moodCalendar[d.key] || "#333",
             borderRadius: "50%",
             width: 36,
             height: 36,
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            fontSize: 18,
+            fontSize: 14,
             color: moodCalendar[d.key] ? "white" : "gray",
+            border: moodCalendar[d.key] ? "2px solid #fff" : "1px solid #444",
+            transition: "background 0.2s",
           }}
         >
-          {getDayEmoji(d.key)}
+          {d.label}
         </div>
       ))}
     </div>
@@ -53,7 +89,7 @@ function CalendarGrid() {
 
 export default function MoodCalendar() {
   return (
-    <div className="w-full bg-base-100 rounded-md p-3 flex flex-col gap-2">
+    <div className="w-full h-full bg-base-100 rounded-md p-3 flex-1/4 flex flex-col gap-2">
       {/* Header */}
       <div className="flex flex-col items-start justify-between">
         <h4 className="font-semibold tracking-tight text-start ps-2 text-base">
@@ -61,7 +97,9 @@ export default function MoodCalendar() {
         </h4>
         <div className="bg-info h-[2px] w-[99%] mx-auto rounded-full animate-pulse my-2"></div>
       </div>
-      <CalendarGrid />
+      <ResponsiveContainer width="100%">
+        <CalendarGrid />
+      </ResponsiveContainer>
     </div>
   );
 }
