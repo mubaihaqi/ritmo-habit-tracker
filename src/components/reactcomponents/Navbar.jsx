@@ -33,7 +33,7 @@ export default function Navbar() {
           className="btn btn-ghost btn-circle avatar"
         >
           <div className="w-10 rounded-full border-2 border-info">
-            <img alt="Guweh mubaihaqi" src="public\abangjawa.jpg" />
+            <img alt="Guweh mubaihaqi" src="\abangjawa.jpg" />
           </div>
         </div>
       </div>

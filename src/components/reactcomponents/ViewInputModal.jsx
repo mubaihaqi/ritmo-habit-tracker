@@ -14,9 +14,9 @@ export default function ViewInputModal() {
           type="date"
           name=""
           id=""
-          className="h-full p-2 items-center rounded-md bg-base-100 focus:outline-none focus:ring focus:ring-info/50"
+          className="h-full p-2 items-center rounded-md bg-base-100 border border-info/20 focus:outline-none focus:ring focus:ring-info/50"
         />
-        <div className="flex flex-row items-center justify-center gap-2 bg-base-100 rounded-md p-2">
+        <div className="flex flex-row items-center justify-center gap-2 bg-base-100 border border-info/20 rounded-md p-2">
           <label htmlFor="" className="text-success text-sm font-medium">
             Happy
           </label>

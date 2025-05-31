@@ -1,5 +1,11 @@
 import ViewInputModal from "./ViewInputModal";
+import MainModal from "./MainModal";
 
 export default function WrprViewInputModal() {
-  return ViewInputModal();
+  return (
+    <div className="">
+      <ViewInputModal />
+      <MainModal />
+    </div>
+  );
 }
