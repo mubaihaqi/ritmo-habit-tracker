@@ -1,105 +1,70 @@
 // Path ke prisma client mungkin perlu disesuaikan berdasarkan struktur proyek Anda
 // Contoh: import prisma from '../../../lib/prisma'; (jika API di src/pages/api/)
 // Contoh: import prisma from '$lib/prisma'; (jika SvelteKit)
-import prisma from "../../../lib/prisma"; // Sesuaikan path ini!
+import prisma from "../../lib/prisma.js";
 
-// Definisi kategori yang ingin diambil dari database
-// modelName adalah nama model di Prisma (biasanya lowercase_singular atau camelCase)
-// displayName adalah nama yang akan ditampilkan di UI
 const categoryDefinitions = [
-  { modelName: "emosi", displayName: "Emosi" },
-  { modelName: "tidur", displayName: "Tidur" },
-  { modelName: "kesehatan", displayName: "Kesehatan" },
-  { modelName: "hobi", displayName: "Hobi" },
-  { modelName: "makanan", displayName: "Makanan" },
-  { modelName: "sosial", displayName: "Sosial" },
-  { modelName: "akuYangLebihBaik", displayName: "Aku Yang Lebih Baik" },
-  { modelName: "pekerjaanRumah", displayName: "Pekerjaan Rumah" },
-  { modelName: "cuaca", displayName: "Cuaca" },
-  { modelName: "sekolah", displayName: "Sekolah" },
-  { modelName: "kecantikan", displayName: "Kecantikan" },
-  { modelName: "produktivitas", displayName: "Produktivitas" },
-  { modelName: "romance", displayName: "Romance" },
-  { modelName: "tempat", displayName: "Tempat" },
-  { modelName: "bulan", displayName: "Bulan" },
-  { modelName: "kebiasaanBuruk", displayName: "Kebiasaan Buruk" },
-  { modelName: "gejalaHaid", displayName: "Gejala Haid" },
-  { modelName: "pekerjaan", displayName: "Pekerjaan" },
+  { modelName: "Emosi", displayName: "Emosi" },
+  { modelName: "Tidur", displayName: "Tidur" },
+  { modelName: "Kesehatan", displayName: "Kesehatan" },
+  { modelName: "Hobi", displayName: "Hobi" },
+  { modelName: "Makanan", displayName: "Makanan" },
+  { modelName: "Sosial", displayName: "Sosial" },
+  { modelName: "AkuYangLebihBaik", displayName: "Aku Yang Lebih Baik" },
+  { modelName: "PekerjaanRumah", displayName: "Pekerjaan Rumah" },
+  { modelName: "Cuaca", displayName: "Cuaca" },
+  { modelName: "Sekolah", displayName: "Sekolah" },
+  { modelName: "Kecantikan", displayName: "Kecantikan" },
+  { modelName: "Produktivitas", displayName: "Produktivitas" },
+  { modelName: "Romance", displayName: "Romance" },
+  { modelName: "Tempat", displayName: "Tempat" },
+  { modelName: "Bulan", displayName: "Bulan" },
+  { modelName: "KebiasaanBuruk", displayName: "Kebiasaan Buruk" },
+  { modelName: "GejalaHaid", displayName: "Gejala Haid" },
+  { modelName: "Pekerjaan", displayName: "Pekerjaan" },
 ];
 
-export default async function handler(req, res) {
-  if (req.method === "GET") {
-    try {
-      const allCategories = [];
-      let categoryTypeId = 1; // Untuk ID unik bagi setiap tipe kategori (digunakan sebagai key di React)
+// export default async function (context) { // OLD: Default export
+export async function GET(context) {
+  // NEW: Named export for GET requests
+  // console.log("--- SERVER LOG: /api/categories endpoint was HIT! ---"); // Uncomment if you used the simplified version
+  // console.log("--- SERVER LOG: Request method:", context.request.method); // Uncomment if you used the simplified version
+  if (context.request.method !== "GET") {
+    return new Response("Method Not Allowed", { status: 405 });
+  }
+  try {
+    const allCategories = [];
+    let categoryTypeId = 1;
 
-      for (const def of categoryDefinitions) {
-        // Pastikan prisma client memiliki model dengan nama `def.modelName`
-        // Prisma client biasanya menghasilkan akses model dengan huruf kecil di awal,
-        // contoh: prisma.emosi, prisma.hobi, dst.
-        if (prisma[def.modelName]) {
-          const items = await prisma[def.modelName].findMany({
-            select: {
-              id: true,
-              label: true,
-            },
-            orderBy: {
-              // Anda bisa menambahkan pengurutan jika diperlukan
-              label: "asc", // contoh: urutkan berdasarkan label
-            },
-          });
-
-          allCategories.push({
-            id: categoryTypeId++, // ID untuk tipe kategori
-            name: def.displayName, // Nama yang akan ditampilkan sebagai judul kategori
-            data: items.map((item) => ({
-              id: item.id, // ID dari item (misalnya, id emosi "senang")
-              label: item.label, // Label dari item (misalnya, "senang")
-            })),
-          });
-        } else {
-          console.warn(`Model Prisma ${def.modelName} tidak ditemukan.`);
-        }
-      }
-
-      // Di Next.js, Anda akan menggunakan res.status(200).json(allCategories);
-      // Sesuaikan cara mengirim respons berdasarkan framework Anda.
-      // Untuk contoh ini, saya akan mengasumsikan environment seperti Next.js API routes.
-      if (
-        res &&
-        typeof res.status === "function" &&
-        typeof res.json === "function"
-      ) {
-        res.status(200).json(allCategories);
+    for (const def of categoryDefinitions) {
+      if (prisma[def.modelName]) {
+        const items = await prisma[def.modelName].findMany({
+          select: { id: true, label: true },
+          orderBy: { label: "asc" },
+        });
+        console.log(`Model: ${def.modelName}, Jumlah data: ${items.length}`);
+        allCategories.push({
+          id: categoryTypeId++,
+          name: def.displayName,
+          data: items.map((item) => ({
+            id: item.id,
+            label: item.label,
+          })),
+        });
       } else {
-        // Fallback jika 'res' bukan objek respons standar (misalnya, di SvelteKit endpoint)
-        // Di SvelteKit, Anda akan return new Response(JSON.stringify(allCategories), { headers: { 'Content-Type': 'application/json' } });
-        console.log("API Data (non-Next.js like response):", allCategories);
-        return allCategories; // Atau format respons yang sesuai untuk framework Anda
-      }
-    } catch (error) {
-      console.error("Gagal mengambil data kategori:", error);
-      if (
-        res &&
-        typeof res.status === "function" &&
-        typeof res.json === "function"
-      ) {
-        res.status(500).json({ message: "Gagal mengambil data kategori" });
-      } else {
-        // Handle error untuk environment lain
-        throw error; // atau return error response yang sesuai
+        console.log(`Model tidak ditemukan di prisma: ${def.modelName}`);
       }
     }
-  } else {
-    // Method Not Allowed
-    if (
-      res &&
-      typeof res.setHeader === "function" &&
-      typeof res.status === "function" &&
-      typeof res.end === "function"
-    ) {
-      res.setHeader("Allow", ["GET"]);
-      res.status(405).end(`Method ${req.method} Not Allowed`);
-    }
+
+    return new Response(JSON.stringify(allCategories), {
+      status: 200,
+      headers: { "Content-Type": "application/json" },
+    });
+  } catch (error) {
+    console.error("Gagal mengambil data kategori:", error);
+    return new Response(
+      JSON.stringify({ message: "Gagal mengambil data kategori" }),
+      { status: 500, headers: { "Content-Type": "application/json" } }
+    );
   }
 }

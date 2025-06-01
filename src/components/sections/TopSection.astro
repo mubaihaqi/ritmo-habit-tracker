@@ -6,6 +6,7 @@ import WrprTodaysMood from "../reactcomponents/WrprTodaysMood.jsx";
 <div
   class="top-section flex flex-row items-center justify-between gap-2 text-center mb-4 bg-info/5 p-3 rounded-lg"
 >
-  <WrprViewInputModal />
+  <WrprViewInputModal client:load />
+  {/* Atau client:idle */}
   <WrprTodaysMood />
 </div>

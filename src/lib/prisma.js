@@ -1,14 +1,16 @@
-import { PrismaClient } from "@prisma/client/edge";
-import { withAccelerate } from "@prisma/extension-accelerate";
+import { PrismaClient } from "@prisma/client"; // 1. Ubah ke standard client
+// import { withAccelerate } from "@prisma/extension-accelerate"; // 2. Komentari atau hapus Accelerate untuk tes ini
 
 let prisma;
 
 // Helper function to create a Prisma instance, consistently with Accelerate
 const createPrismaInstance = () => {
-  return new PrismaClient().$extends(withAccelerate());
+  return new PrismaClient(); // 3. Buat instance standar tanpa Accelerate
 };
 
 if (process.env.NODE_ENV === "production") {
+  // Untuk produksi, Anda mungkin ingin tetap dengan Edge/Accelerate jika itu target deployment Anda.
+  // Untuk tes lokal ini, kita samakan:
   prisma = createPrismaInstance();
 } else {
   // For development and test environments
